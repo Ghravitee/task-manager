@@ -62,10 +62,16 @@ export interface Task {
   priority: TaskPriority;
   assignee_id: string | null;
   created_by: string | null;
+  updated_at: string;
   due_date: string | null;
   created_at: string;
   assignee?: Profile;
   creator?: Profile;
+  project?: {
+    id: string;
+    name: string;
+    workspace_id: string;
+  };
 }
 
 export interface TaskFilters {

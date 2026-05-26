@@ -178,10 +178,6 @@ export async function acceptInvite(
     return invite.workspace_id;
   }
 
-  console.log("existing membership:", existing);
-  console.log("userId:", userId);
-  console.log("workspace_id:", invite.workspace_id);
-
   // Insert as member
   // Replace the insert block in acceptInvite
   const { error } = await supabase.from("workspace_members").insert({
@@ -200,6 +196,89 @@ export async function deleteInvite(inviteId: string): Promise<void> {
     .from("workspace_invites")
     .delete()
     .eq("id", inviteId);
+
+  if (error) throw new Error(error.message);
+}
+
+// ─── Rename a workspace ────────────────────────────────────────
+
+export async function renameWorkspace(
+  workspaceId: string,
+  name: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("workspaces")
+    .update({ name })
+    .eq("id", workspaceId);
+
+  if (error) throw new Error(error.message);
+}
+
+// ─── Transfer ownership ────────────────────────────────────────
+
+export async function transferOwnership(
+  workspaceId: string,
+  newOwnerId: string,
+): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Update the workspaces table owner_id
+  const { error: workspaceError } = await supabase
+    .from("workspaces")
+    .update({ owner_id: newOwnerId })
+    .eq("id", workspaceId);
+
+  if (workspaceError) throw new Error(workspaceError.message);
+
+  // Demote current owner to admin
+  const { error: demoteError } = await supabase
+    .from("workspace_members")
+    .update({ role: "admin" })
+    .eq("workspace_id", workspaceId)
+    .eq("user_id", user.id);
+
+  if (demoteError) throw new Error(demoteError.message);
+
+  // Promote new owner
+  const { error: promoteError } = await supabase
+    .from("workspace_members")
+    .update({ role: "owner" })
+    .eq("workspace_id", workspaceId)
+    .eq("user_id", newOwnerId);
+
+  if (promoteError) throw new Error(promoteError.message);
+}
+
+// ─── Leave a workspace ─────────────────────────────────────────
+
+export async function leaveWorkspace(workspaceId: string): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Check if user is the owner — owners must transfer first
+  const { data: workspace, error: workspaceError } = await supabase
+    .from("workspaces")
+    .select("owner_id")
+    .eq("id", workspaceId)
+    .single();
+
+  if (workspaceError) throw new Error(workspaceError.message);
+  if (workspace.owner_id === user.id) {
+    throw new Error(
+      "You must transfer ownership before leaving this workspace.",
+    );
+  }
+
+  const { error } = await supabase
+    .from("workspace_members")
+    .delete()
+    .eq("workspace_id", workspaceId)
+    .eq("user_id", user.id);
 
   if (error) throw new Error(error.message);
 }

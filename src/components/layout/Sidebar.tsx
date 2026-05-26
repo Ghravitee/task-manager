@@ -56,6 +56,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           },
         ]
       : []),
+    ...(currentWorkspaceId
+      ? [
+          {
+            to: `/workspace/${currentWorkspaceId}/settings`,
+            label: "Settings",
+            icon: <Settings size={18} />,
+          },
+        ]
+      : []),
   ];
 
   const handleSignOut = async () => {

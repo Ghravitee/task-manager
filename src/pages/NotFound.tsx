@@ -1,7 +1,7 @@
 // src/pages/NotFound.tsx
 import { useNavigate } from "react-router-dom";
 
-export function NotFound() {
+function NotFound() {
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -28,3 +28,5 @@ export function NotFound() {
     </div>
   );
 }
+
+export default NotFound;

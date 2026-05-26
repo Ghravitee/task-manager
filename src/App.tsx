@@ -21,6 +21,9 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const WorkspaceMembersPage = lazy(() => import("./pages/WorkspaceMembersPage"));
 const InvitePage = lazy(() => import("./pages/InvitePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const WorkspaceSettingsPage = lazy(
+  () => import("./pages/WorkspaceSettingsPage"),
+);
 
 // ─── App Shell ─────────────────────────────────────────────────
 
@@ -73,6 +76,10 @@ const router = createBrowserRouter([
           {
             path: "workspace/:workspaceId/members",
             element: <WorkspaceMembersPage />,
+          },
+          {
+            path: "/workspace/:workspaceId/settings",
+            element: <WorkspaceSettingsPage />,
           },
         ],
       },

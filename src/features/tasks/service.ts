@@ -131,3 +131,25 @@ export async function updateTask(
   if (error) throw error;
   return data as Task;
 }
+
+export async function fetchAssignedTasks(userId: string): Promise<Task[]> {
+  const { data, error } = await supabase
+    .from("tasks")
+    .select(
+      `
+      *,
+      assignee:profiles!tasks_assignee_id_fkey(*),
+      project:projects(
+        id,
+        name,
+        workspace_id
+      )
+    `,
+    )
+    .eq("assignee_id", userId)
+    .order("updated_at", { ascending: false })
+    .limit(10);
+
+  if (error) throw error;
+  return data as Task[];
+}
