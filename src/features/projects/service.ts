@@ -19,7 +19,7 @@ export async function fetchProjects(
     name: row.name,
     description: row.description,
     created_by: row.created_by,
-    created_at: row.created_at,
+    created_at: row.created_at ?? "",
     task_count: (row.tasks as unknown as { count: number }[])[0]?.count ?? 0,
     completed_count: 0, // populated later when ProjectPage loads full task data
   }));
@@ -45,7 +45,12 @@ export async function createProject(
 
   if (error) throw error;
 
-  return { ...data, task_count: 0, completed_count: 0 };
+  return {
+    ...data,
+    task_count: 0,
+    completed_count: 0,
+    created_at: data.created_at ?? "",
+  };
 }
 
 // ─── Delete ───────────────────────────────────────────────────

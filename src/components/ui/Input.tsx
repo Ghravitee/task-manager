@@ -49,8 +49,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               "border-white/10 focus:border-cyan-500",
               "disabled:cursor-not-allowed disabled:opacity-50",
               error && "border-red-500/50 focus:border-red-500",
-              leftIcon && "pl-10",
-              rightIcon && "pr-10",
+              !!leftIcon && "pl-10",
+              !!rightIcon && "pr-10",
               "px-4 py-2.5",
               className,
             )}
