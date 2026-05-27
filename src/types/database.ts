@@ -131,6 +131,7 @@ export type Database = {
           project_id: string
           status: string
           title: string
+          updated_at: string
         }
         Insert: {
           assignee_id?: string | null
@@ -143,6 +144,7 @@ export type Database = {
           project_id: string
           status?: string
           title: string
+          updated_at?: string
         }
         Update: {
           assignee_id?: string | null
@@ -155,6 +157,7 @@ export type Database = {
           project_id?: string
           status?: string
           title?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -292,7 +295,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_workspace_member: { Args: { ws_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
